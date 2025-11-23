@@ -8,16 +8,55 @@
   </head>
   <body class="bg-slate-900 text-white w-[400px] p-5 flex flex-col gap-5">
     <h2 class="text-xl font-bold">Whatsapp Secret Encoder</h2>
-    <label class="inline-flex items-center cursor-pointer">
-      <span class="select-none text-sm font-medium text-heading">OFF</span>
 
-      <input type="checkbox" class="sr-only peer" />
+    <!-- toggle extension -->
+    <div class="space-y-2">
+      <h3 class="font-bold text-lg">Toggle extension</h3>
+      <label class="inline-flex items-center cursor-pointer">
+        <span class="select-none text-sm font-medium text-heading">OFF</span>
 
-      <div
-        class="relative mx-3 w-9 h-5 bg-gray-300 rounded-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-400 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"
-      ></div>
+        <input type="checkbox" class="sr-only peer" />
 
-      <span class="select-none text-sm font-medium text-heading">ON</span>
-    </label>
+        <div
+          class="relative mx-3 w-9 h-5 bg-gray-300 rounded-full after:content-[''] after:absolute after:top-[2px] after:start-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-green-400 peer-checked:after:translate-x-full rtl:peer-checked:after:-translate-x-full"
+        ></div>
+
+        <span class="select-none text-sm font-medium text-heading">ON</span>
+      </label>
+    </div>
+
+    <!-- generate mapping -->
+    <div class="space-y-2">
+      <h3 class="font-bold text-lg">Generate secret code mapping</h3>
+      <textarea
+        class="bg-gray-300 h-30 w-full rounded-md p-5 text-black overflow-scroll no-scrollbar"
+        readonly
+      ></textarea>
+      <div class="space-x-2">
+        <button
+          class="bg-green-400 text-white px-4 py-2 font-bold rounded-md cursor-pointer"
+        >
+          Generate
+        </button>
+        <button
+          class="bg-slate-300 text-slate-800 px-4 py-2 font-bold rounded-md cursor-pointer"
+        >
+          Copy
+        </button>
+      </div>
+    </div>
+
+    <!-- save mapping -->
+    <div class="space-y-2">
+      <h3 class="font-bold text-lg">Save secret code mapping</h3>
+      <textarea
+        class="bg-white h-30 w-full rounded-md p-5 text-black overflow-scroll no-scrollbar"
+      ></textarea>
+      <button
+        class="bg-green-400 text-white px-4 py-2 font-bold rounded-md cursor-pointer"
+      >
+        Save
+      </button>
+    </div>
   </body>
 </html>
