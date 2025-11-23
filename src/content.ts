@@ -1,3 +1,5 @@
+import showFloatingWindow from "./floatingPanel";
+
 //mapping + initialization
 const mapping: Record<string, string> = {
   a: "x9#",
@@ -76,6 +78,18 @@ function decodeText(msg: string) {
   return decoded;
 }
 
+function encodeText(msg: string) {
+  let encoded = "";
+
+  for (const char of msg) {
+    const encodedPart = mapping[char];
+    if (!encodedPart) return "";
+    encoded += encodedPart;
+  }
+
+  return encoded;
+}
+
 function InsertDecodedText(decodedText: string, wrapper: HTMLElement) {
   const divEl = document.createElement("div");
 
@@ -135,11 +149,67 @@ function ListenToIncomingMessages() {
   });
 }
 
+function insertEncodeBttn() {
+  const inputWrapper = document.querySelector(
+    "#main div.lexical-rich-text-input"
+  );
+  if (!inputWrapper) return;
+  const btn = document.createElement("button");
+  btn.id = "encode-btn";
+
+  // --- Styling ---
+  btn.textContent = "ENCODE🔒";
+  btn.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
+  btn.style.border = "none";
+  btn.style.padding = "6px 12px";
+  btn.style.marginInline = "10px";
+  btn.style.borderRadius = "8px";
+  btn.style.color = "white";
+  btn.style.cursor = "pointer";
+  btn.style.fontSize = "12px";
+  btn.style.fontWeight = "600";
+  btn.style.letterSpacing = "1px";
+  btn.style.display = "flex";
+  btn.style.alignItems = "center";
+  btn.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+  btn.style.userSelect = "none";
+
+  // Hover effect
+  btn.onmouseenter = () => {
+    btn.style.background = "linear-gradient(135deg, #66bb6a, #1b5e20)";
+  };
+  btn.onmouseleave = () => {
+    btn.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
+  };
+
+  btn.addEventListener("click", () => {
+    const input = inputWrapper.querySelector(
+      "span.selectable-text.copyable-text"
+    );
+    if (!input) return;
+    const text = input.textContent;
+    showFloatingWindow(encodeText(text));
+  });
+
+  const parent = inputWrapper.parentElement;
+
+  if (!parent) return;
+  parent.appendChild(btn);
+}
+
 (async function () {
   await waitForElement(
     'div[data-scrolltracepolicy="wa.web.conversation.messages"]'
   );
   ListenToIncomingMessages();
+  await waitForElement("div.lexical-rich-text-input");
+  insertEncodeBttn();
+  const input = document.querySelector(
+    "div.lexical-rich-text-input span.selectable-text.copyable-text"
+  );
+  if (!input) return;
+  input.textContent = "hello world";
+  input.dispatchEvent(new InputEvent("input", { bubbles: true }));
 })();
 
 //watch for user typing

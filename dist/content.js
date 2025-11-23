@@ -1,5 +1,87 @@
 "use strict";
 (() => {
+  // src/floatingPanel.ts
+  function showFloatingWindow(encoded) {
+    let panel = document.getElementById("wa-encode-panel");
+    if (panel) {
+      panel.querySelector(".wa-text").textContent = encoded;
+      panel.style.display = "block";
+      return;
+    }
+    panel = document.createElement("div");
+    panel.id = "wa-encode-panel";
+    panel.innerHTML = `
+    <div class="wa-header">
+      <span>Encoded Message</span>
+      <button class="wa-close">\u2716</button>
+    </div>
+
+    <div class="wa-body">
+      <pre class="wa-text">${encoded}</pre>
+      <button class="wa-copy">Copy</button>
+    </div>
+  `;
+    panel.style.cssText = `
+    position: fixed;
+    bottom: 80px;
+    right: 40px;
+    width: 280px;
+    background: #1e1e1e;
+    color: white;
+    padding: 12px;
+    border-radius: 12px;
+    box-shadow: 0 4px 18px rgba(0,0,0,0.4);
+    font-family: Inter, sans-serif;
+    z-index: 999999999;
+  `;
+    const header = panel.querySelector(".wa-header");
+    header.style.cssText = `
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 600;
+    margin-bottom: 8px;
+  `;
+    const body = panel.querySelector(".wa-body");
+    body.style.cssText = `
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  `;
+    const textArea = panel.querySelector(".wa-text");
+    textArea.style.cssText = `
+    white-space: pre-wrap;
+    background: #111;
+    padding: 10px;
+    border-radius: 6px;
+    max-height: 160px;
+    overflow-y: auto;
+    font-size: 14px;
+  `;
+    const copyBtn = panel.querySelector(".wa-copy");
+    copyBtn.style.cssText = `
+    padding: 8px 12px;
+    background: #4caf50;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    color: white;
+    font-weight: 600;
+  `;
+    const close = panel.querySelector(".wa-close");
+    close.style.color = "white";
+    close.onclick = () => {
+      panel.style.display = "none";
+    };
+    copyBtn.addEventListener("click", () => {
+      const encoded2 = panel.querySelector(".wa-text").textContent;
+      navigator.clipboard.writeText(encoded2);
+      copyBtn.textContent = "Copied!";
+      setTimeout(() => copyBtn.textContent = "Copy", 1500);
+    });
+    document.body.appendChild(panel);
+  }
+
   // src/content.ts
   var mapping = {
     a: "x9#",
@@ -69,6 +151,15 @@
     }
     return decoded;
   }
+  function encodeText(msg) {
+    let encoded = "";
+    for (const char of msg) {
+      const encodedPart = mapping[char];
+      if (!encodedPart) return "";
+      encoded += encodedPart;
+    }
+    return encoded;
+  }
   function InsertDecodedText(decodedText, wrapper) {
     const divEl = document.createElement("div");
     divEl.style.color = "white";
@@ -117,10 +208,58 @@
       subtree: true
     });
   }
+  function insertEncodeBttn() {
+    const inputWrapper = document.querySelector(
+      "#main div.lexical-rich-text-input"
+    );
+    if (!inputWrapper) return;
+    const btn = document.createElement("button");
+    btn.id = "encode-btn";
+    btn.textContent = "ENCODE\u{1F512}";
+    btn.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
+    btn.style.border = "none";
+    btn.style.padding = "6px 12px";
+    btn.style.marginInline = "10px";
+    btn.style.borderRadius = "8px";
+    btn.style.color = "white";
+    btn.style.cursor = "pointer";
+    btn.style.fontSize = "12px";
+    btn.style.fontWeight = "600";
+    btn.style.letterSpacing = "1px";
+    btn.style.display = "flex";
+    btn.style.alignItems = "center";
+    btn.style.boxShadow = "0 2px 4px rgba(0,0,0,0.2)";
+    btn.style.userSelect = "none";
+    btn.onmouseenter = () => {
+      btn.style.background = "linear-gradient(135deg, #66bb6a, #1b5e20)";
+    };
+    btn.onmouseleave = () => {
+      btn.style.background = "linear-gradient(135deg, #4CAF50, #2E7D32)";
+    };
+    btn.addEventListener("click", () => {
+      const input = inputWrapper.querySelector(
+        "span.selectable-text.copyable-text"
+      );
+      if (!input) return;
+      const text = input.textContent;
+      showFloatingWindow(encodeText(text));
+    });
+    const parent = inputWrapper.parentElement;
+    if (!parent) return;
+    parent.appendChild(btn);
+  }
   (async function() {
     await waitForElement(
       'div[data-scrolltracepolicy="wa.web.conversation.messages"]'
     );
     ListenToIncomingMessages();
+    await waitForElement("div.lexical-rich-text-input");
+    insertEncodeBttn();
+    const input = document.querySelector(
+      "div.lexical-rich-text-input span.selectable-text.copyable-text"
+    );
+    if (!input) return;
+    input.textContent = "hello world";
+    input.dispatchEvent(new InputEvent("input", { bubbles: true }));
   })();
 })();

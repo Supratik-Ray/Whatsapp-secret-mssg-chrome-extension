@@ -1,7 +1,7 @@
 const esbuild = require("esbuild");
 
 const options = {
-  entryPoints: ["src/content.ts", "src/popup.ts"],
+  entryPoints: ["src/content.ts", "src/popup.ts", "src/background.ts"],
   outdir: "dist",
   bundle: true,
   format: "iife",

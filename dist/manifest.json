@@ -8,9 +8,13 @@
     "48": "icon48.png"
   },
 
-  "permissions": ["storage", "activeTab", "scripting"],
+  "permissions": ["storage", "activeTab", "scripting", "clipboardWrite"],
 
   "host_permissions": ["https://web.whatsapp.com/*"],
+
+  "background": {
+    "service_worker": "background.js"
+  },
 
   "action": {
     "default_popup": "popup.html",
@@ -22,6 +26,13 @@
       "matches": ["https://web.whatsapp.com/*"],
       "js": ["content.js"],
       "run_at": "document_idle"
+    }
+  ],
+
+  "web_accessible_resources": [
+    {
+      "resources": ["popup.html"],
+      "matches": ["https://web.whatsapp.com/*"]
     }
   ]
 }
